@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,16 +15,93 @@ namespace LabCalculatorEngineering
     public partial class MainForm : Form
     {
         string expression = "";
+        private enum FormElementType
+        {
+            Label, Button, TextBox, ListBox
+        };
+
+        class TableRow
+        {
+            public FormElementType Type { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public float Size { get; set; }
+        }
+
+        class ScaleElements
+        {
+            private TableRow[] TableRows;
+
+            public ScaleElements() { }
+
+            public void SetDefaults(TableRow[] tableRows)
+            {
+                TableRows = tableRows;
+            }
+            
+            public TableRow[] RescaleFonts(TableRow[] tableRows)
+            {
+                foreach (TableRow tableRow in tableRows)
+                {
+                    var originalTableRow = GetRowByType(tableRow.Type);
+                    if (originalTableRow == null)
+                    {
+                        continue;
+                    }
+
+                    if (originalTableRow.Width > 0 && originalTableRow.Height > 0)
+                    {
+                        float xRatio = tableRow.Width / (float)originalTableRow.Width;
+                        float yRatio = tableRow.Height / (float)originalTableRow.Height;
+
+                        float ratio = (xRatio >= yRatio) ? xRatio : yRatio;
+
+                        tableRow.Size = originalTableRow.Size * ratio;
+                    }
+                }
+
+                return tableRows;
+            }
+
+            private TableRow GetRowByType(FormElementType type)
+            {
+                foreach (TableRow tableRow in TableRows)
+                {
+                    if (tableRow.Type == type)
+                    {
+                        return tableRow;
+                    }
+                }
+
+                return null;
+            }
+
+        }
+
+        ScaleElements scaleElements = new ScaleElements();
 
         public MainForm()
         {
             InitializeComponent();
             SetControlProperties();
+            SetScaleElementsDefaults();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            
+        }
 
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (!(scaleElements is null) && this.IsHandleCreated)
+            {
+                TableRow[] tableRows = GetRescaledFontSizes();
+                if (!(tableRows is null))
+                {
+                    SetNewFontSizes(tableRows);
+                }
+            }
         }
 
         private void button_Click(object sender, EventArgs e)
@@ -86,5 +164,93 @@ namespace LabCalculatorEngineering
             control.Click += new System.EventHandler(button_Click);
         }
 
+        private void SetScaleElementsDefaults()
+        {
+            TableRow[] tableRows = new TableRow[4];
+
+            tableRows[0] = new TableRow();
+            tableRows[0].Type = FormElementType.Label;
+            tableRows[0].Width = labelExpression.Width;
+            tableRows[0].Height = labelExpression.Height;
+            tableRows[0].Size = labelExpression.Font.Size;
+
+            tableRows[1] = new TableRow();
+            tableRows[1].Type = FormElementType.TextBox;
+            tableRows[1].Width = textBoxOperand.Width;
+            tableRows[1].Height = textBoxOperand.Height;
+            tableRows[1].Size = textBoxOperand.Font.Size;
+
+            tableRows[2] = new TableRow();
+            tableRows[2].Type = FormElementType.Button;
+            tableRows[2].Width = button1.Width;
+            tableRows[2].Height = button1.Height;
+            tableRows[2].Size = button1.Font.Size;
+
+            tableRows[3] = new TableRow();
+            tableRows[3].Type = FormElementType.ListBox;
+            tableRows[3].Width = listBoxOperationHistory.Width;
+            tableRows[3].Height = listBoxOperationHistory.Height;
+            tableRows[3].Size = listBoxOperationHistory.Font.Size;
+
+            scaleElements.SetDefaults(tableRows);
+        }
+
+        private TableRow[] GetRescaledFontSizes()
+        {
+            TableRow[] tableRows = new TableRow[4];
+
+            tableRows[0] = new TableRow();
+            tableRows[0].Type = FormElementType.Label;
+            tableRows[0].Width = labelExpression.Width;
+            tableRows[0].Height = labelExpression.Height;
+
+            tableRows[1] = new TableRow();
+            tableRows[1].Type = FormElementType.TextBox;
+            tableRows[1].Width = textBoxOperand.Width;
+            tableRows[1].Height = textBoxOperand.Height;
+
+            tableRows[2] = new TableRow();
+            tableRows[2].Type = FormElementType.Button;
+            tableRows[2].Width = button1.Width;
+            tableRows[2].Height = button1.Height;
+
+            tableRows[3] = new TableRow();
+            tableRows[3].Type = FormElementType.ListBox;
+            tableRows[3].Width = listBoxOperationHistory.Width;
+            tableRows[3].Height = listBoxOperationHistory.Height;
+
+            tableRows = scaleElements.RescaleFonts(tableRows);
+
+            return tableRows;
+        }
+
+        private void SetNewFontSizes(TableRow[] tableRows)
+        {
+            foreach (TableRow tableRow in tableRows)
+            {
+                switch (tableRow.Type)
+                {
+                    case FormElementType.Label:
+                        SetNewFontSize(labelExpression, tableRow.Size);
+                        break;
+                    case FormElementType.TextBox:
+                        SetNewFontSize(textBoxOperand, tableRow.Size);
+                        break;
+                    case FormElementType.ListBox:
+                        SetNewFontSize(listBoxOperationHistory, tableRow.Size);
+                        break;
+                    case FormElementType.Button:
+                        foreach (Control padButton in tableLayoutPanelPad.Controls)
+                        {
+                            SetNewFontSize(padButton, tableRow.Size);
+                        }
+                        break;
+                }
+            }
+        }
+        private void SetNewFontSize(Control control, float newSize)
+        {
+            control.Font = new Font(control.Font.FontFamily, newSize);
+        }
     }
 }
