@@ -248,6 +248,7 @@ namespace LabCalculatorEngineering
                 }
             }
         }
+        
         private void SetNewFontSize(Control control, float newSize)
         {
             control.Font = new Font(control.Font.FontFamily, newSize);
