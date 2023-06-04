@@ -14,59 +14,12 @@ namespace LabCalculatorEngineering
 {
     public partial class MainForm : Form
     {
+        #region FIELDS
+        
         string expression = "";
-
-        /*class ScaleElements
-        {
-            private TableRow[] TableRows;
-
-            public ScaleElements() { }
-
-            public void SetDefaults(TableRow[] tableRows)
-            {
-                TableRows = tableRows;
-            }
-            
-            public TableRow[] RescaleFonts(TableRow[] tableRows)
-            {
-                foreach (TableRow tableRow in tableRows)
-                {
-                    var originalTableRow = GetRowByType(tableRow.Type);
-                    if (originalTableRow == null)
-                    {
-                        continue;
-                    }
-
-                    if (originalTableRow.Width > 0 && originalTableRow.Height > 0)
-                    {
-                        float xRatio = tableRow.Width / (float)originalTableRow.Width;
-                        float yRatio = tableRow.Height / (float)originalTableRow.Height;
-
-                        float ratio = (xRatio >= yRatio) ? xRatio : yRatio;
-
-                        tableRow.Size = originalTableRow.Size * ratio;
-                    }
-                }
-
-                return tableRows;
-            }
-
-            private TableRow GetRowByType(FormElementType type)
-            {
-                foreach (TableRow tableRow in TableRows)
-                {
-                    if (tableRow.Type == type)
-                    {
-                        return tableRow;
-                    }
-                }
-
-                return null;
-            }
-
-        }*/
-
         ScaleElements scaleElements = new ScaleElements();
+
+        #endregion
 
         public MainForm()
         {
@@ -74,6 +27,8 @@ namespace LabCalculatorEngineering
             SetControlProperties();
             SetScaleElementsDefaults();
         }
+
+        #region FormEvents
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
@@ -87,10 +42,18 @@ namespace LabCalculatorEngineering
             }
         }
 
+        #endregion
+
+        #region ControlEvents
+
         private void button_Click(object sender, EventArgs e)
         {
             handler_keypress(((System.Windows.Forms.Control)sender).Name);
         }
+
+        #endregion
+
+        #region UtilityFunctions
 
         private void handler_keypress(string Name)
         {
@@ -146,6 +109,10 @@ namespace LabCalculatorEngineering
             control.Text = text;
             control.Click += new System.EventHandler(button_Click);
         }
+
+        #endregion
+
+        #region FontResize
 
         private void SetScaleElementsDefaults()
         {
@@ -236,5 +203,7 @@ namespace LabCalculatorEngineering
         {
             control.Font = new Font(control.Font.FontFamily, newSize);
         }
+
+        #endregion
     }
 }
