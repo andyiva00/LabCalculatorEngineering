@@ -15,20 +15,8 @@ namespace LabCalculatorEngineering
     public partial class MainForm : Form
     {
         string expression = "";
-        private enum FormElementType
-        {
-            Label, Button, TextBox, ListBox
-        };
 
-        class TableRow
-        {
-            public FormElementType Type { get; set; }
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public float Size { get; set; }
-        }
-
-        class ScaleElements
+        /*class ScaleElements
         {
             private TableRow[] TableRows;
 
@@ -76,7 +64,7 @@ namespace LabCalculatorEngineering
                 return null;
             }
 
-        }
+        }*/
 
         ScaleElements scaleElements = new ScaleElements();
 
@@ -85,11 +73,6 @@ namespace LabCalculatorEngineering
             InitializeComponent();
             SetControlProperties();
             SetScaleElementsDefaults();
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            
         }
 
         private void MainForm_Resize(object sender, EventArgs e)

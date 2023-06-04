@@ -740,7 +740,6 @@
             this.Controls.Add(this.tableLayoutPanelMain);
             this.Name = "MainForm";
             this.Text = "Engineering calculator";
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.tableLayoutPanelMain.ResumeLayout(false);
             this.tableLayoutPanelLeft.ResumeLayout(false);
